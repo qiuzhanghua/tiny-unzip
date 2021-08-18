@@ -3,20 +3,28 @@ package main
 import (
 	"archive/zip"
 	"fmt"
+	flag "github.com/spf13/pflag"
 	"io"
 	"os"
 	"path/filepath"
 )
 
 func main() {
-	dest, err := os.Getwd()
-	if err != nil {
-		panic(err)
+	var destination string
+
+	flag.Usage = func() {
+		fmt.Printf("Unzip File to Destination Folder\n\nUSAGE:\n%s <filename> [OPTIONS]\n\nOPTIONS:\n", os.Args[0])
+		flag.PrintDefaults()
+		fmt.Println()
 	}
+	flag.StringVarP(&destination, "exdir", "d", ".", "Directory where files be extracted into")
+	flag.Parse()
+
 	if len(os.Args) <= 1 {
-		fmt.Printf("Usage : %s <filename>\n", os.Args[0])
+		flag.Usage()
 		os.Exit(1)
 	}
+
 	zipFilename := os.Args[1]
 	archive, err := zip.OpenReader(zipFilename)
 	if err != nil {
@@ -25,15 +33,11 @@ func main() {
 	defer archive.Close()
 
 	for _, f := range archive.File {
-		filePath := filepath.Join(dest, f.Name)
+		filePath := filepath.Join(destination, f.Name)
 		if f.FileInfo().IsDir() {
 			os.MkdirAll(filePath, os.ModePerm)
 			continue
 		}
-
-		//if err := os.MkdirAll(filepath.Dir(filePath), os.ModePerm); err != nil {
-		//	panic(err)
-		//}
 
 		destFile, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
 		if err != nil {

@@ -7,5 +7,5 @@ go build
 
 Usage
 ```bash
-unzip <filename>
+unzip <filename> -d .
 ```
