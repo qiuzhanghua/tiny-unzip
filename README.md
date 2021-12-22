@@ -2,10 +2,10 @@
 unzip file to current work directory
 ## build
 ```bash
-go build
+go build -o tiny-unzip
 ```
 
 Usage
 ```bash
-unzip <filename> -d .
+tiny-unzip <filename> -d .
 ```

@@ -1,6 +1,7 @@
 .vscode
 .idea
 unzip
+tiny-unzip
 ### Go template
 # Binaries for programs and plugins
 *.exe
