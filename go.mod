@@ -1,4 +1,4 @@
-module github.com/qiuzhanghua/unzip
+module github.com/qiuzhanghua/tiny-unzip
 
 go 1.17
 
