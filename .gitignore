@@ -2,7 +2,6 @@
 .idea
 unzip
 tiny-unzip
-autotag.*
 
 ### Go template
 # Binaries for programs and plugins
