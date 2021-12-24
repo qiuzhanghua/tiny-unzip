@@ -1,11 +1,26 @@
 # unzip
 unzip file to current work directory
-## build
+
+## Prerequisite
 ```bash
-go build -o tiny-unzip
+go install github.com/qiuzhanghua/autotag@latest
 ```
 
-Usage
+## build
+```bash
+autotag write
+go build
+```
+
+## Usage
 ```bash
 tiny-unzip <filename> -d .
+```
+or
+```bash
+tiny-unzip version
+```
+or
+```bash
+tiny-unzip help
 ```

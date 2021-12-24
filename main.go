@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 func main() {
@@ -22,13 +23,22 @@ func main() {
 
 	if len(os.Args) <= 1 {
 		flag.Usage()
-		os.Exit(1)
+		os.Exit(0)
+	}
+	if strings.HasSuffix(os.Args[1], "help") {
+		flag.Usage()
+		os.Exit(0)
+	}
+	if strings.HasSuffix(os.Args[1], "version") {
+		fmt.Printf("tiny-unzip %s (%s %s)\n", AppVersion, AppRevision, AppBuildDate)
+		os.Exit(0)
 	}
 
 	zipFilename := os.Args[1]
 	archive, err := zip.OpenReader(zipFilename)
 	if err != nil {
-		panic(err)
+		fmt.Printf("Can't find file named %s!\n", zipFilename)
+		os.Exit(1)
 	}
 	defer archive.Close()
 
