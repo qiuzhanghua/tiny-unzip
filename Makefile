@@ -1,7 +1,9 @@
-all: build build-linux build-darwin build-windows
+all: pre build build-linux build-darwin build-windows post
+
+pre:
+	autotag write
 
 build:
-	autotag write
 	go build
 
 build-linux:
@@ -16,5 +18,8 @@ build-windows:
 	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o tiny-unzip-`autotag current`-windows-amd64.exe
 	CGO_ENABLED=0 GOOS=windows GOARCH=386 go build -o tiny-unzip-`autotag current`-windows-386.exe
 
+post:
+	git restore autotag.go
+
 clean:
-	rm tiny-unzip-*.*
+	rm tiny-unzip*.*

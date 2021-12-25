@@ -1,5 +1,5 @@
 package main
 
-const AppVersion = "v1.0.12"
-const AppRevision = "694f696"
+const AppVersion = "1.0.13"
+const AppRevision = ""
 const AppBuildDate = "2021-12-25"

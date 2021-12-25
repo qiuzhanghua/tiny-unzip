@@ -10,6 +10,7 @@ go install github.com/qiuzhanghua/autotag@latest
 ```bash
 autotag write
 go build
+git restore autotag.go
 ```
 
 ## Usage
