@@ -48,19 +48,24 @@ func main() {
 			os.MkdirAll(filePath, os.ModePerm)
 			continue
 		}
+		dir := filepath.Dir(filePath)
+		os.MkdirAll(dir, os.ModePerm)
 
 		destFile, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
 		if err != nil {
-			panic(err)
+			fmt.Printf("Open %s error: %s!\n", filePath, err)
+			os.Exit(1)
 		}
 
 		fileInArchive, err := f.Open()
 		if err != nil {
-			panic(err)
+			fmt.Printf("Open %s error: %s!\n", fileInArchive, err)
+			os.Exit(1)
 		}
 
 		if _, err := io.Copy(destFile, fileInArchive); err != nil {
-			panic(err)
+			fmt.Printf("Copy error: %s!\n", err)
+			os.Exit(1)
 		}
 
 		destFile.Close()
