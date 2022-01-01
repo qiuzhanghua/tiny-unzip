@@ -22,4 +22,5 @@ post:
 	git restore autotag.go
 
 clean:
+	rm tiny-unzip
 	rm tiny-unzip*.*

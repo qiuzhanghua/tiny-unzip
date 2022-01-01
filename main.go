@@ -2,9 +2,11 @@ package main
 
 import (
 	"archive/zip"
+	"bytes"
 	"fmt"
 	flag "github.com/spf13/pflag"
 	"io"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
@@ -35,40 +37,63 @@ func main() {
 	}
 
 	zipFilename := os.Args[1]
+	err := Unzip(zipFilename, destination)
+	if err != nil {
+		fmt.Println("Err", err)
+	}
+}
+
+func Unzip(zipFilename string, destination string) error {
 	archive, err := zip.OpenReader(zipFilename)
 	if err != nil {
-		fmt.Printf("Can't find file named %s!\n", zipFilename)
-		os.Exit(1)
+		return err
 	}
 	defer archive.Close()
+	linkMap := make(map[string]string, 0)
 
 	for _, f := range archive.File {
 		filePath := filepath.Join(destination, f.Name)
 		if f.FileInfo().IsDir() {
-			os.MkdirAll(filePath, os.ModePerm)
+			_ = os.MkdirAll(filePath, os.ModePerm)
 			continue
 		}
+
 		dir := filepath.Dir(filePath)
-		os.MkdirAll(dir, os.ModePerm)
+		_ = os.MkdirAll(dir, os.ModePerm)
+
+		fileInArchive, err := f.Open()
+		if f.Mode()&fs.ModeSymlink > 0 {
+			buf := new(bytes.Buffer)
+			_, err := io.Copy(buf, fileInArchive)
+			if err != nil {
+				return err
+			}
+			linkMap[buf.String()] = f.Name
+			continue
+		}
 
 		destFile, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
 		if err != nil {
-			fmt.Printf("Open %s error: %s!\n", filePath, err)
-			os.Exit(1)
+			return err
 		}
-
-		fileInArchive, err := f.Open()
-		if err != nil {
-			fmt.Printf("Open %s error: %s!\n", fileInArchive, err)
-			os.Exit(1)
-		}
-
 		if _, err := io.Copy(destFile, fileInArchive); err != nil {
-			fmt.Printf("Copy error: %s!\n", err)
-			os.Exit(1)
+			return err
 		}
 
 		destFile.Close()
 		fileInArchive.Close()
 	}
+	wd, err := os.Getwd()
+	err = os.Chdir(destination)
+	if err != nil {
+		return err
+	}
+	for k, v := range linkMap {
+		err = os.Symlink(k, v)
+		if err != nil {
+			return err
+		}
+	}
+	_ = os.Chdir(wd)
+	return nil
 }
