@@ -1,7 +1,7 @@
 .vscode
 .idea
 tiny-unzip
-tiny-unzip-*.*
+tiny-unzip_*.*
 
 ### Go template
 # Binaries for programs and plugins
