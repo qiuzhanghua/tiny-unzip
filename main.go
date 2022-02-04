@@ -62,7 +62,7 @@ func Unzip(zipFilename string, destination string) error {
 		return err
 	}
 	defer archive.Close()
-	linkMap := make(map[string]string, 0)
+	//linkMap := make(map[string]string, 0)
 
 	for _, f := range archive.File {
 		filePath := filepath.Join(destination, f.Name)
@@ -76,14 +76,19 @@ func Unzip(zipFilename string, destination string) error {
 
 		fileInArchive, err := f.Open()
 		//log.Debugf("%s %s", f.Name, f.FileInfo().Mode())
-		if f.Mode()&fs.ModeSymlink > 0 {
+		if f.Mode()&fs.ModeSymlink != 0 {
 			//log.Debug(f.Mode() & fs.ModeSymlink)
 			buf := new(bytes.Buffer)
 			_, err := io.Copy(buf, fileInArchive)
 			if err != nil {
 				return err
 			}
-			linkMap[f.Name] = buf.String()
+			//linkMap[f.Name] = buf.String()
+			err = os.Symlink(buf.String(), f.Name)
+			log.Debugf("%s => %s", buf.String(), f.Name)
+			if err != nil {
+				log.Error(err)
+			}
 			continue
 		}
 
@@ -98,19 +103,19 @@ func Unzip(zipFilename string, destination string) error {
 		destFile.Close()
 		fileInArchive.Close()
 	}
-	wd, err := os.Getwd()
-	err = os.Chdir(destination)
-	if err != nil {
-		return err
-	}
-	for k, v := range linkMap {
-		log.Debugf("%s => %s", v, k)
-		err = os.Symlink(v, k)
-		if err != nil {
-			log.Error(err)
-		}
-	}
-	_ = os.Chdir(wd)
+	//wd, err := os.Getwd()
+	//err = os.Chdir(destination)
+	//if err != nil {
+	//	return err
+	//}
+	//for k, v := range linkMap {
+	//	log.Debugf("%s => %s", v, k)
+	//	err = os.Symlink(v, k)
+	//	if err != nil {
+	//		log.Error(err)
+	//	}
+	//}
+	//_ = os.Chdir(wd)
 	return nil
 }
 
