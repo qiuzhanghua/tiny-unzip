@@ -7,6 +7,7 @@ build:
 	go build
 
 build-linux:
+	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o tiny-unzip_`autotag current`_linux_arm64
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o tiny-unzip_`autotag current`_linux_amd64
 	CGO_ENABLED=0 GOOS=linux GOARCH=386 go build -o tiny-unzip_`autotag current`_linux_386
 
